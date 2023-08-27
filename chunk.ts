@@ -1,12 +1,12 @@
 export type Chunk<
-  T extends any[],
-  N extends number,
-  A extends any[] = [],
-  B extends any[] = []
-> = B['length'] extends N
-  ? Chunk<T, N, [...A, B]>
-  : T extends [infer U, ...infer W]
-  ? Chunk<W, N, A, [...B, U]>
-  : [...A, B]
+  Arr extends any[],
+  Num extends number,
+  Answer extends any[] = [],
+  Tmp extends any[] = []
+> = Tmp['length'] extends Num
+  ? Chunk<Arr, Num, [...Answer, Tmp]>
+  : Arr extends [infer T, ...infer U]
+  ? Chunk<U, Num, Answer, [...Tmp, T]>
+  : [...Answer, Tmp]
 
-type A = Chunk<[1, 2, 3], 2>
+type A = Chunk<[1, 2, 3, 4], 3>
