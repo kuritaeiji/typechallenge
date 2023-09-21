@@ -1,35 +1,74 @@
-type None = { type: 'None' }
-type Some<T> = { type: 'Some'; value: T }
-type Optional<T> = None | Some<T>
+type IsString<T> = [T] extends [string] ? true : false
 
-type ValueOf<T extends Optional<any>> = [T] extends [Some<infer U>] ? U : null
+type A = IsString<string | number>
 
-type A = ValueOf<Some<number>>
+const myFilter = <T>(array: T[], predicate: (element: T) => boolean) => {
+  const newArray: T[] = []
+  for (const element of array) {
+    if (predicate(element)) {
+      newArray.push(element)
+    }
+  }
+  return newArray
+}
 
-type IsNever<T> = [T] extends [never] ? true : false
+type Speed = 'slow' | 'medium' | 'fast'
 
-type B = IsNever<never>
+const getSpeed = (speed: Speed) => {
+  if (speed == 'slow') {
+    return 10
+  }
 
-type C = Optional<number> extends Some<infer U> | None ? U : null
+  if (speed == 'medium') {
+    return 20
+  }
 
-type Arraify<T> = { [P in keyof T]: T[P][] }
+  return 30
+}
 
-type D = Arraify<{ a: number; b: string }>
+type AddEventListener = (
+  event: string,
+  handler: () => void,
+  option?:
+    | boolean
+    | {
+        capture?: boolean
+        once?: boolean
+        excess?: boolean
+      }
+) => void
 
-type E = Arraify<{ a: number } | { b: string }>
+const giveId = <T>(obj: T): T & { id: string } => {
+  const id = '文字列'
+  return {
+    ...obj,
+    id
+  }
+}
 
-type AB = { a: number } | { b: string }
+type AddId<T extends object> = {
+  [P in keyof T | 'id']: P extends keyof T ? T[P] : string
+}
 
-type F = { [P in keyof AB]: AB[P][] }
+type B = AddId<{ a: string }>
 
-type ElementToString<T extends any[]> = { [P in keyof T]: P }
+type UseState = <T>(
+  state: T
+) => [T, (newState: T) => void | ((updateFunc: (oldState: T) => T) => void)]
 
-type G = ElementToString<number[]>
+// [{id: 1, name: 'a'}, {id: 2, name: 'b'}] -> {1: {id: 1, name: 'a'}, 2: {id: 2, name: 'b'}}
 
-type H = ElementToString<[1, 2, 3]>
-
-type Func = ((entities: string[]) => void) | ((entity: string) => void)
-
-const a: Func = entityOrEntities => {}
-
-a('a')
+const mapFromArray = <
+  T extends { [P: PropertyKey]: number | string },
+  K extends keyof T
+>(
+  array: T[],
+  key: K
+): { [P in T[K]]: T } => {
+  const newObj = {} as { [P in T[K]]: T }
+  array.forEach(element => {
+    const obj = element as T
+    newObj[obj[key] as string | number] = obj
+  })
+  return newObj
+}
